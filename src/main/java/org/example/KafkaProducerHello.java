@@ -4,17 +4,20 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class KafkaProducerHello {
     public static void main(String[] args) {
         Properties props = new Properties();
-        // Set the address of the Kafka server
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        // Set the serializer class for keys
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        // Set the serializer class for values
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        try (InputStream input = new FileInputStream("src/main/resources/kafka.properties")) {
+            // load a properties file
+            props.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // Create a Kafka producer with the specified properties
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {

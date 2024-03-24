@@ -1,10 +1,11 @@
 package org.example;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
@@ -12,16 +13,12 @@ import java.util.Properties;
 public class KafkaConsumerHello {
     public static void main(String[] args) {
         Properties props = new Properties();
-        // Set the address of the Kafka server
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        // Set the consumer group ID
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "test");
-        // Set the deserializer class for keys
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        // Set the deserializer class for values
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        // Set the offset reset policy
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        try (InputStream input = new FileInputStream("src/main/resources/kafka.properties")) {
+            // load a properties file
+            props.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
         // Create a Kafka consumer with the specified properties
